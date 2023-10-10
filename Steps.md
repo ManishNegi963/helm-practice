@@ -141,4 +141,56 @@ helm list
 helm status <chart name>
 ```
 
+-**CUstom node app**
+
+    helm create node-app
+
+<img width="446" alt="image" src="https://github.com/ManishNegi963/helm-practice/assets/124788172/9e837606-0423-4ba0-aee4-54c310fe3c05">
+
+   - When we create an application using command helm create it create the following:
+
+  <img width="745" alt="image" src="https://github.com/ManishNegi963/helm-practice/assets/124788172/0df11315-051c-42da-bd62-c4ce74a8915e">
+
+  - Edit `values.yaml` to include:
+
+```yaml
+replicaCount: 1
+
+image:
+  repository: mnmanish/node-todo-app1
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 8000
+  nodePort: 30009
+```
+
+- Open `service.yaml` under `templates/` and modify it:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-service
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+  - port: {{ .Values.service.port }}
+    targetPort: {{ .Values.service.targetPort }} #modify this as targetPort
+    nodePort: {{ .Values.service.port }}
+  selector:
+    app: {{ .Release.Name }}
+```
+
+ - apply command and open security port 30009
+
+       helm install node-app ./node-app
+   
+
+
+
+
 
